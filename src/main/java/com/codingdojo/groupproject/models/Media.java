@@ -14,6 +14,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -40,8 +42,13 @@ public class Media {
     )
 	private List<Tag> tags;
 	
-	@OneToMany(mappedBy="media", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-	private List<Favorite> favorites; 
+	@ManyToMany(fetch=FetchType.LAZY)
+	@JoinTable(
+		name= "favorite_medias",
+		joinColumns = @JoinColumn(name="media_id"),
+		inverseJoinColumns = @JoinColumn(name = "user_id")
+	)
+	private List<User> users; 
 	
 	@Column(updatable=false)
 	private Date createdAt;
@@ -53,6 +60,72 @@ public class Media {
 		this.name = name;
 		this.description = description;
 	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public List<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
+	}
+
+	public List<User> getUsers() {
+		return users;
+	}
+
+	public void setFavorites(List<User> users) {
+		this.users = users;
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+	
+	@PrePersist
+	protected void onCreate()
+	{
+		this.createdAt = new Date();
+	}
+	
+	@PreUpdate
+	protected void onUpdate()
+	{
+		this.updatedAt = new Date();
+	}
+	
+	
 	 
 	 
 }

@@ -50,9 +50,6 @@ public class User {
     private Date createdAt;
     private Date updatedAt;
     
-    @OneToMany(mappedBy="user", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    private List<Media> favorites;
-    
     @ManyToMany(fetch =FetchType.EAGER)
     @JoinTable(
     	name = "users_roles",
@@ -60,6 +57,14 @@ public class User {
     	inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private List<Role> roles;
+    
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+    	name = "favorite_medias",
+    	joinColumns = @JoinColumn(name="user_id"),
+    	inverseJoinColumns = @JoinColumn(name="media_id")
+    )
+    private List<Media> favorites;
     
   
     public User() {}
@@ -110,76 +115,17 @@ public class User {
 	public void setConfirm(String confirm) {
 		this.confirm = confirm;
 	}*/
-
-	
-	public List<Match> getChallengerMatches() {
-		return challengerMatches;
-	}
-
-	public void setChallengerMatches(List<Match> challengerMatches) {
-		this.challengerMatches = challengerMatches;
-	}
-
-	public List<Match> getChallengeeMatches() {
-		return challengeeMatches;
-	}
-
-	public void setChallengeeMatches(List<Match> challengeeMatches) {
-		this.challengeeMatches = challengeeMatches;
-	}
-
-	public Integer getWins() {
-		return wins;
-	}
-
-	public void setWins(Integer wins) { 
-		this.wins = wins;
-	}
-
-	public Integer getLosses() {
-		return losses;
-	}
-
-	public void setLosses(Integer losses) {
-		this.losses = losses;
-	}
-    
-	public void updateWins() {
-		this.wins += 1;
-	}
-	
-	public void updateLosses() {
-		this.losses += 1;
-	}
 	
 	@PrePersist
 	protected void onCreate()
 	{
 		this.createdAt = new Date();
-		this.wins = 0;
-		this.losses = 0;
 	}
 	
 	@PreUpdate
 	protected void onUpdate()
 	{
 		this.updatedAt = new Date();
-	}
-
-	public List<Game> getCreatedGames() {
-		return createdGames;
-	}
-
-	public void setCreatedGames(List<Game> createdGames) {
-		this.createdGames = createdGames;
-	}
-
-	public List<Highscore> getHighscores() {
-		return highscores;
-	}
-
-	public void setHighscores(List<Highscore> highscores) {
-		this.highscores = highscores;
 	}
 
 	public List<Role> getRoles() {
