@@ -13,7 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -31,10 +30,15 @@ public class Media {
 	@NotEmpty(message="A name is required.")
 	private String name;
 	
-	@Size(min=0, max=300, message="Description must be between 0 and 300 characters.")
-	private String description;
+	@Size(min=5, max=20, message="Category must be between 5 and 20 characters.")
+	@NotEmpty(message="Category is required.")
+	private String category;
 	
-	@ManyToMany(fetch =FetchType.EAGER)
+	@Size(min=5, max=20, message="Status must be between 5 and 20 characters.")
+	@NotEmpty(message="Status is required.")
+	private String status;
+	
+	@ManyToMany(fetch =FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
     	name = "media_tags",
     	joinColumns = @JoinColumn(name = "media_id"),
@@ -42,7 +46,7 @@ public class Media {
     )
 	private List<Tag> tags;
 	
-	@ManyToMany(fetch=FetchType.LAZY)
+	@ManyToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(
 		name= "favorite_medias",
 		joinColumns = @JoinColumn(name="media_id"),
@@ -56,9 +60,10 @@ public class Media {
  
 	public Media() {}
  
-	public Media(String name, String description) {
+	public Media(String name, String category, String status) {
 		this.name = name;
-		this.description = description;
+		this.category = category;
+		this.status = status;
 	}
 
 	public Long getId() {
@@ -77,12 +82,12 @@ public class Media {
 		this.name = name;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getCategory() {
+		return category;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setCategory(String category) {
+		this.category = category;
 	}
 
 	public List<Tag> getTags() {
@@ -124,6 +129,20 @@ public class Media {
 	{
 		this.updatedAt = new Date();
 	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public void setUsers(List<User> users) {
+		this.users = users;
+	}
+	
+	
 	
 	
 	 

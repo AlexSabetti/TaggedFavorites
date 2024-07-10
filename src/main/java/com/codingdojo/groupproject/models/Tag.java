@@ -31,10 +31,14 @@ public class Tag {
 	)
 	private List<Media> medias;
 	
+	@NotEmpty(message="This message should never show up.")
+	private Long conflictId;
+	
 	public Tag() {}
 	
-	public Tag(String name) {
+	public Tag(String name, Long conflictId) {
 		this.name = name;
+		this.conflictId = conflictId;
 	}
 
 	public Long getId() {
@@ -60,4 +64,14 @@ public class Tag {
 	public void setMedias(List<Media> medias) {
 		this.medias = medias;
 	}
+
+	public Long getConflictId() {
+		return conflictId;
+	}
+
+	public void setConflictId(Long conflictId) {
+		this.conflictId = conflictId;
+	}
+	
+	
 }

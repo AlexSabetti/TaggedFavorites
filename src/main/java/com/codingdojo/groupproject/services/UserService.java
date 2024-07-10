@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import com.codingdojo.groupproject.models.LoginUser;
+import com.codingdojo.groupproject.models.Media;
 import com.codingdojo.groupproject.models.RegisterUser;
 import com.codingdojo.groupproject.models.User;
 import com.codingdojo.groupproject.repositories.RoleRepository;
+import com.codingdojo.groupproject.repositories.TagRepository;
 import com.codingdojo.groupproject.repositories.UserRepository;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
@@ -22,6 +22,8 @@ public class UserService {
 	private UserRepository userRepository;
 	@Autowired
 	private RoleRepository roleRepository;
+	@Autowired
+	private TagService tagService;
 	
 	public List<User> findUsers(){
 		return userRepository.findAll();
@@ -49,6 +51,7 @@ public class UserService {
 			if(userRepository.findAll().size() == 0) { //This should be changed later because having to rely on both finding and then measuring the size of an ever increasing list of users is not very smart
 				user.setRoles(roleRepository.findByName("ROLE_ADMIN"));
 				user = userRepository.save(user);
+				tagService.initialTagLoad();
 			} else {
 				user.setRoles(roleRepository.findByName("ROLE_USER"));
 				user = userRepository.save(user);
@@ -94,6 +97,16 @@ public class UserService {
 	}
 	
 	public User updateUser(User user) {
+		return userRepository.save(user);
+	}
+	
+	public User addFavoriteMedia(User user, Media media) {
+		user.getFavorites().add(media);
+		return userRepository.save(user);
+	}
+	
+	public User removeFavoriteMedia(User user, Media media) {
+		user.getFavorites().remove(media);
 		return userRepository.save(user);
 	}
 }
