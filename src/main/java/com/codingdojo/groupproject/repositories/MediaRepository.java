@@ -20,4 +20,5 @@ public interface MediaRepository extends CrudRepository<Media, Long>{
 	Optional<Media> findByName(String name);
 	
 	List<Media> findByTags(List<Tag> tags);
+	
 }

@@ -1,5 +1,7 @@
 package com.codingdojo.groupproject.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,8 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.codingdojo.groupproject.models.LoginUser;
 import com.codingdojo.groupproject.models.Media;
 import com.codingdojo.groupproject.models.RegisterUser;
+import com.codingdojo.groupproject.models.Tag;
 import com.codingdojo.groupproject.models.User;
 import com.codingdojo.groupproject.services.MediaService;
+import com.codingdojo.groupproject.services.TagService;
 import com.codingdojo.groupproject.services.UserService;
 
 import jakarta.servlet.http.HttpSession;
@@ -25,6 +29,8 @@ public class HomeController {
 	private MediaService mediaService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private TagService tagService;
 	@Autowired
 	private HttpSession session;
 	
@@ -94,7 +100,8 @@ public class HomeController {
 			User user = userService.findUserById((long)session.getAttribute("currentuser"));
 			model.addAttribute("user", user);
 			model.addAttribute("newMedia", new Media());
-			return "createPage.jsp";
+			model.addAttribute("tags", tagService.findAllTags());
+			return "createOne.jsp";
 		}
 	}
 	
@@ -103,8 +110,59 @@ public class HomeController {
 		if(result.hasErrors()) {
 			return "createPage.jsp";
 		} else {
-			mediaService.createMedia(media);
+			User user = userService.findUserById((long) session.getAttribute("currentuser"));
+			userService.addFavoriteMedia(user, mediaService.createMedia(media));
 			return "redirect:/taggedfavorites/home";
+		}
+	}
+	
+	@GetMapping("/taggedfavorites/games/{mediaId}/edit")
+	public String editGame(@PathVariable("mediaId") Long id, Model model) {
+		if(session.getAttribute("currentuser") == null) {
+			model.addAttribute("warning", "You are not logged in, please log in.");
+			return "redirect:/";
+		} else {
+			User user = userService.findUserById((long)session.getAttribute("currentuser"));
+			Media media = mediaService.findMedia(id);
+			List<Tag> toModel = tagService.findAllTags();
+			for(Tag tag : media.getTags()) {
+				for(Tag freshTag : toModel) {
+					if(tag.getConflictId() == freshTag.getConflictId() && tag.getConflictId() > 0) {
+						toModel.remove(freshTag);
+					} else if(tag.getId() == freshTag.getId()) {
+						toModel.remove(freshTag);
+					}
+					
+				}
+			}
+			model.addAttribute("user", user);
+			model.addAttribute("newMedia", media);
+			model.addAttribute("tags", toModel);
+			return "editOne.jsp";
+		}
+	}
+	
+	@GetMapping("/test")
+	public String test(Model model) {
+		if(session.getAttribute("currentuser") == null) {
+			model.addAttribute("warning", "You are not logged in, please log in.");
+			return "redirect:/";
+		} else {
+			model.addAttribute("user", userService.findUserById((long) session.getAttribute("currentuser")));
+			model.addAttribute("newMedia", new Media());
+			model.addAttribute("taglist", tagService.findAllTags());
+			return "test.jsp";
+		}
+	}
+	
+	@PostMapping("/test/create")
+	public String testCreate(@Valid @ModelAttribute("newMedia") Media media, BindingResult result, Model model) {
+		if(result.hasErrors()) {
+			return "redirect:/test";
+		} else {
+			User user = userService.findUserById((long) session.getAttribute("currentuser"));
+			userService.addFavoriteMedia(user, mediaService.createMedia(media));
+			return "redirect:/test";
 		}
 	}
 	

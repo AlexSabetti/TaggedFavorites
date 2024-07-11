@@ -13,7 +13,6 @@ import com.codingdojo.groupproject.models.Media;
 import com.codingdojo.groupproject.models.RegisterUser;
 import com.codingdojo.groupproject.models.User;
 import com.codingdojo.groupproject.repositories.RoleRepository;
-import com.codingdojo.groupproject.repositories.TagRepository;
 import com.codingdojo.groupproject.repositories.UserRepository;
 
 @Service
@@ -24,6 +23,8 @@ public class UserService {
 	private RoleRepository roleRepository;
 	@Autowired
 	private TagService tagService;
+	@Autowired
+	private RoleService roleService;
 	
 	public List<User> findUsers(){
 		return userRepository.findAll();
@@ -49,6 +50,7 @@ public class UserService {
 			User user = new User(newRegisterObject.getUserName(), newRegisterObject.getEmail(), hashed);
 			//Subject to change, first account that is registered in an empty database will become the administrator
 			if(userRepository.findAll().size() == 0) { //This should be changed later because having to rely on both finding and then measuring the size of an ever increasing list of users is not very smart
+				roleService.initRoles();
 				user.setRoles(roleRepository.findByName("ROLE_ADMIN"));
 				user = userRepository.save(user);
 				tagService.initialTagLoad();

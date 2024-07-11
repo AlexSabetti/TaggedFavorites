@@ -33,6 +33,10 @@ public class Role {
 	
 	public Role() {}
 
+	public Role(String string) {
+		this.name = string;
+	}
+
 	public Long getId() {
 		return id;
 	}

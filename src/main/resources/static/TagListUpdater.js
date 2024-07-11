@@ -1,0 +1,7 @@
+/**
+ * 
+ */
+
+ function tagClickedAdd(id){
+	
+ }
