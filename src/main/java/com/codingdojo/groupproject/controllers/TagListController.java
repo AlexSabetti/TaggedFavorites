@@ -63,6 +63,7 @@ public class TagListController {
 				} else if(tag.getId() == freshTag.getId()) {
 					//Do nothing
 				} else {
+					if(!toModel.contains(freshTag.getName()))
 					toModel.add(freshTag.getName());
 				}
 				
