@@ -3,7 +3,6 @@ package com.codingdojo.groupproject.models;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -56,7 +55,7 @@ public class User {
     )
     private List<Role> roles;
     
-    @ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
     	name = "favorite_medias",
     	joinColumns = @JoinColumn(name="user_id"),

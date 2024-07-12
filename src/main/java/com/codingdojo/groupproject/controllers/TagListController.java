@@ -36,7 +36,7 @@ public class TagListController {
 		return ResponseEntity.ok(tagNames);
 	}
 	
-	@GetMapping("/api/add")
+	@PostMapping("/api/add")
 	public ResponseEntity<Integer> add(@RequestBody MoveRequest moveRequest)
 	{
 		Tag tag = tagService.findTagByName(moveRequest.getTagName());

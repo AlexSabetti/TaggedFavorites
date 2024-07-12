@@ -3,7 +3,6 @@ package com.codingdojo.groupproject.models;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -38,7 +37,7 @@ public class Media {
 	@NotEmpty(message="Status is required.")
 	private String status;
 	
-	@ManyToMany(fetch =FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch =FetchType.EAGER)
     @JoinTable(
     	name = "media_tags",
     	joinColumns = @JoinColumn(name = "media_id"),
@@ -46,7 +45,7 @@ public class Media {
     )
 	private List<Tag> tags;
 	
-	@ManyToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToMany(fetch=FetchType.LAZY)
 	@JoinTable(
 		name= "favorite_medias",
 		joinColumns = @JoinColumn(name="media_id"),
@@ -101,7 +100,10 @@ public class Media {
 	public List<User> getUsers() {
 		return users;
 	}
-
+	
+	public List<User> getFavorites(){
+		return users;
+	}
 	public void setFavorites(List<User> users) {
 		this.users = users;
 	}

@@ -6,7 +6,7 @@ let allTags = new Array();
 
  function tagClickedAdd(tagName){
 	const delivery = {mediaTagList: appliedTags, tagName: tagName}
-	fetch('/api/add', {method: 'GET', headers:{'Content-Type': 'application/json','body': JSON.stringify(delivery)}}).then(response => response.json()).then(payload =>{
+	fetch('/api/add', {method: 'POST', headers:{'Content-Type': 'application/json'},'body': JSON.stringify(delivery),}).then(response => response.json()).then(payload =>{
 		if(payload != 0){
 			
 			appliedTags.push(tagName);
@@ -25,9 +25,10 @@ let allTags = new Array();
  function tagClickedRemove(tagName){
 	allTags.push(tagName);
 	let newAppliedTags = new Array();
-	allTags.forEach(tag =>{
+	appliedTags.forEach(tag =>{
 		if(tag != tagName){
 			newAppliedTags.push(tag);
+			appliedTags.pop;
 		}
 	});
 	appliedTags = newAppliedTags;
@@ -48,7 +49,7 @@ function startUp(){
 		console.log(payload)
 		allTags = payload;
 		startUpTags();
-		});
+		}); 
 	}
 	
 	
@@ -56,19 +57,19 @@ function startUp(){
 
 function startUpTags(){
 	console.log(document.getElementById("taglist"))
-	const tagList = document.getElementById('taglist')
+	let tagList = document.getElementById('taglist')
 	console.log(allTags);
 	
 	tagList.innerHTML = '';
-	allTags.forEach(tag => {const li = document.createElement('li');
-	li.textContent = tag;
+	allTags.forEach(tagall => {const li = document.createElement('li');
+	li.textContent = tagall;
 	li.addEventListener('click', () => {
-		tagClickedAdd(tag)
+		tagClickedAdd(tagall)
 	})
 	tagList.appendChild(li);
 	});
 	
-	const unTagList = document.getElementById('untaglist')
+	let unTagList = document.getElementById('untaglist')
 	unTagList.innerHTML='';
 	appliedTags.forEach(tag => {const li = document.createElement('li');
 	li.textContent = tag;
@@ -79,6 +80,8 @@ function startUpTags(){
 	});
 	
 	document.getElementById('hiddenList').value = Array.from(appliedTags).join(',');
+	console.log("here")
+	
 }
 
 function updateTags(){

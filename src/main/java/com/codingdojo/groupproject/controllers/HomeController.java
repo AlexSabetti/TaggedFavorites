@@ -104,7 +104,7 @@ public class HomeController {
 		}
 	}
 	
-	@GetMapping("/games/new")
+	@GetMapping("/taggedfavorites/games/create")
 	public String createGame(Model model) {
 		if(session.getAttribute("currentuser") == null) {
 			model.addAttribute("warning", "You are not logged in, please log in.");
@@ -114,15 +114,18 @@ public class HomeController {
 			model.addAttribute("user", user);
 			model.addAttribute("newMedia", new Media());
 			model.addAttribute("tags", tagService.findAllTags());
-			return "createOne.jsp";
+			return "createPage.jsp";
 		}
 	}
 	
-	@PostMapping("/games/new")
-	public String newGame(@Valid @ModelAttribute("newMedia") Media media, BindingResult result, Model model) {
+	@PostMapping("/taggedfavorites/games/create")
+	public String newGame(@Valid @ModelAttribute("newMedia") Media media, BindingResult result, Model model, @RequestParam String tags) {
 		if(result.hasErrors()) {
-			return "createOne.jsp";
+			return "createPage.jsp";
 		} else {
+			for(String name : tags.split(",")) {
+				media.getTags().add(tagService.findTagByName(name));
+			}
 			User user = userService.findUserById((long) session.getAttribute("currentuser"));
 			userService.addFavoriteMedia(user, mediaService.createMedia(media));
 			return "redirect:/taggedfavorites/home";
@@ -191,6 +194,7 @@ public class HomeController {
 			return "redirect:/test";
 		} else {
 			User user = userService.findUserById((long) session.getAttribute("currentuser"));
+			System.out.println("catch");
 			userService.addFavoriteMedia(user, mediaService.createMedia(media));
 			return "redirect:/test";
 		}
