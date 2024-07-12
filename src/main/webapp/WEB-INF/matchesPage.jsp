@@ -2,14 +2,17 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page isErrorPage="true"%>
 <!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="UTF-8">
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-		<link rel="stylesheet" type="text/css" href="/css/style.css">
-		<script type="text/javascript" src="/js/app.js"></script>
+		<!-- <link rel="stylesheet" type="text/css" href="/css/style.css">
+		<script type="text/javascript" src="/js/app.js"></script> -->
 		<title>Tagged Favorites</title>
 	</head>
 	<body>
@@ -26,10 +29,10 @@
 					</div>
 					<div class="row">
 						<div class="col d-flex justify-content-start">
-							<h3><c:out value="${user.userName}"></c:out>'s list of favorite Games</h3>
+							<h3><c:out value="Game Matches for game: ${favorite.name}"></c:out></h3>
 						</div>
 						<div class="col gap-2 d-flex justify-content-end">
-							<a class="btn btn-success shadow" href="/taggedfavorites/games/create">Add a game</a>
+							<a class="btn btn-secondary shadow" href="/taggedfavorites/home">Go back to Favorites</a>
 						</div>
 					</div>
 				</div>
@@ -40,36 +43,36 @@
 						<thead class="table-dark">
 							<tr>
 								<th scope="col">Title</th>
-								<th scope="col">Category</th>
-								<th scope="col">Status</th>
 								<th scope="col">Matching Tags</th>
-								<th scope="col">Actions</th>
+								<th scope="col">Match</th>
 							</tr>
 						</thead>
-						<tbody class="table-group-divider align-middle">
-							<c:forEach var="game" items="${user.favorites}">
-								<tr>
+						<tbody class="table-group-divider align-middle">							
+							<c:forEach var="game" items="${matches}">
+        						<tr>
 									<td><a href="<c:out value="/games/${game.id}"/>">${game.name}</a></td>
-									<td><c:out value="${game.category}"></c:out></td>
-									<td><c:out value="${game.status}"></c:out></td>
 									<td>
-										<ul class="list-group">
-											<c:forEach var="tag" items="${game.tags}">
-												<li class="list-group-item mx-auto" style="font-size: 12px;">${tag.name}</li>
-											</c:forEach>
-										</ul>
-									</td>
-									<td>
-										<div class="d-flex flex-column gap-2">
-											<a class="btn btn-primary shadow mx-auto" href="/taggedfavorites/<c:out value="${game.id}"></c:out>/matches">See Matches!</a>
-											<c:if test="${game.user.id == user.id}">
-												<a class="btn btn-warning shadow mx-auto" href="/taggedfavorites/<c:out value="${game.id}"></c:out>/edit">Edit</a>
-												<a class="btn btn-danger shadow mx-auto" href="/taggedfavorites/<c:out value="${game.id}"></c:out>/delete">Remove</a>
-											</c:if>
-										</div>
-									</td>
-								</tr>
-							</c:forEach>
+		        						<ul class="list-group">
+			        						<c:set var="total" value="0" />
+			        						<c:set var="coincidences" value="${0}" />
+			        						<c:forEach var="item1" items="${favorite.tags}">
+			     								<c:set var="total" value="${total + 1}" />
+			            						<c:forEach var="item2" items="${game.tags}">
+			                						<c:if test="${item1.name == item2.name}">
+			                    						<c:set var="coincidences" value="${coincidences + 1}" />
+			                    						<c:set var="lastTag" value="${item1.name}" />
+			                    						<li class="list-group-item mx-auto" style="font-size: 12px;">${item1.name}</li>
+			                						</c:if>
+			            						</c:forEach>			                					
+			        						</c:forEach>
+			        					</ul>
+		        					</td>
+		        					<td>
+		        						<c:set var="matchPercentage" value="${coincidences * 100 / total}" />
+		    							<p><fmt:formatNumber value="${matchPercentage}" type="number" maxFractionDigits="2" />%</p>
+		    						</td>
+		    					</tr>
+        					</c:forEach>        					
 						</tbody>
 					</table>
 				</div>

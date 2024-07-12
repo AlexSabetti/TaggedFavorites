@@ -1,5 +1,6 @@
 package com.codingdojo.groupproject.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,14 +120,18 @@ public class HomeController {
 	}
 	
 	@PostMapping("/taggedfavorites/games/create")
-	public String newGame(@Valid @ModelAttribute("newMedia") Media media, BindingResult result, Model model, @RequestParam String tags) {
+	public String newGame(@Valid @ModelAttribute("newMedia") Media media, BindingResult result, Model model, @RequestParam("hiddenList") String tags) {
 		if(result.hasErrors()) {
 			return "createPage.jsp";
 		} else {
+			media.setTags(new ArrayList<Tag>());
 			for(String name : tags.split(",")) {
+				System.out.println(name);
 				media.getTags().add(tagService.findTagByName(name));
 			}
+			System.out.print("Here");
 			User user = userService.findUserById((long) session.getAttribute("currentuser"));
+			media.setUser(user);
 			userService.addFavoriteMedia(user, mediaService.createMedia(media));
 			return "redirect:/taggedfavorites/home";
 		}
@@ -140,37 +145,28 @@ public class HomeController {
 		} else {
 			User user = userService.findUserById((long)session.getAttribute("currentuser"));
 			Media media = mediaService.findMedia(id);
-			List<Tag> toModel = tagService.findAllTags();
-			for(Tag tag : media.getTags()) {
-				for(Tag freshTag : toModel) {
-					if(tag.getConflictId() == freshTag.getConflictId() && tag.getConflictId() > 0) {
-						toModel.remove(freshTag);
-					} else if(tag.getId() == freshTag.getId()) {
-						toModel.remove(freshTag);
-					}
-					
-				}
-			}
 			model.addAttribute("user", user);
-			model.addAttribute("newMedia", media);
-			model.addAttribute("tags", toModel);
-			return "editOne.jsp";
+			model.addAttribute("editedMedia", media);
+			return "editPage.jsp";
 		}
 	}
 	
-	@PostMapping("/taggedfavorites/{mediaId}/edit")
-	public String editing(@Valid @ModelAttribute("newMedia") Media media, @PathVariable("mediaId") Long id, BindingResult result, Model model, @RequestParam String tags) {
+	@PostMapping("/taggedfavorites/{mediaId}/update")
+	public String editing(@Valid @ModelAttribute("newMedia") Media media, @PathVariable("mediaId") Long id, BindingResult result, Model model, @RequestParam("hiddenList") String tags) {
 		if(result.hasErrors()) {
-			return "editOne.jsp";
+			return "editPage.jsp";
 		} else {
-			List<Tag> actualtags = media.getTags();
+			media.setTags(new ArrayList<Tag>());
 			for(String name : tags.split(",")) {
-				if(!actualtags.contains(tagService.findTagByName(name))) {
-					media.getTags().add(tagService.findTagByName(name));
-				}
+				System.out.println(name);
+				media.getTags().add(tagService.findTagByName(name));
 			}
+			User user = userService.findUserById((long)session.getAttribute("currentuser"));
 			media.setId(id);
+			media.setUser(user);
+			media.setUsers(mediaService.findMedia(id).getUsers());
 			mediaService.updateMedia(media);
+			
 			return "redirect:/taggedfavorites/home";
 		}
 	}
@@ -197,6 +193,21 @@ public class HomeController {
 			System.out.println("catch");
 			userService.addFavoriteMedia(user, mediaService.createMedia(media));
 			return "redirect:/test";
+		}
+	}
+	
+	@GetMapping("/taggedfavorites/{mediaId}/matches")
+	public String displayMatches(@PathVariable("mediaId") Long mediaId, Model model) {
+		if(session.getAttribute("currentuser")== null) {
+			return "redirect:/";
+		}else {
+			User user = userService.findUserById((long) session.getAttribute("currentuser"));
+			Media media = mediaService.findMedia(mediaId);
+			List<Media> matches = mediaService.getRecommendedMedia(media);
+			model.addAttribute("favorite", media);
+			model.addAttribute("matches", matches);
+			model.addAttribute("user", user);
+			return "matchesPage.jsp";
 		}
 	}
 	

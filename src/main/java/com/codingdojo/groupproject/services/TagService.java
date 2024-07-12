@@ -17,6 +17,7 @@ public class TagService {
 	
 	public Tag findTagByName(String name) {
 		Optional<Tag> potentialTag = tagRepository.findByName(name);
+		System.out.println(name);
 		if(potentialTag.isPresent()) {
 			return potentialTag.get();
 		} else {

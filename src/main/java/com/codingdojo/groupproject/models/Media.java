@@ -1,8 +1,10 @@
 package com.codingdojo.groupproject.models;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -45,13 +48,17 @@ public class Media {
     )
 	private List<Tag> tags;
 	
-	@ManyToMany(fetch=FetchType.LAZY)
+	@ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
 	@JoinTable(
 		name= "favorite_medias",
 		joinColumns = @JoinColumn(name="media_id"),
 		inverseJoinColumns = @JoinColumn(name = "user_id")
 	)
 	private List<User> users; 
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="user_id")
+	private User user;
 	
 	@Column(updatable=false)
 	private Date createdAt;
@@ -143,6 +150,16 @@ public class Media {
 	public void setUsers(List<User> users) {
 		this.users = users;
 	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
+	
 	
 	
 	

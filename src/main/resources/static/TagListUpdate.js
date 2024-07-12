@@ -14,12 +14,14 @@ let allTags = new Array();
 			allTags.forEach(tag =>{
 				if(tag != tagName){
 					newAllTags.push(tag);
+					
 				}
 			});
 			allTags = newAllTags;
 		}
+		startUpTags();
 	});
-	startUpTags();
+	
  }
  
  function tagClickedRemove(tagName){
@@ -28,7 +30,7 @@ let allTags = new Array();
 	appliedTags.forEach(tag =>{
 		if(tag != tagName){
 			newAppliedTags.push(tag);
-			appliedTags.pop;
+			
 		}
 	});
 	appliedTags = newAppliedTags;
@@ -40,12 +42,15 @@ let allTags = new Array();
 function startUp(){
 	const url = window.location.pathname.split('/');
 	if(url.includes('edit')){
-		fetch('/api/startup/edit', {method: 'GET', headers: {'Content-Type': 'application/json', 'mediaId': document.getElementById('mediaId').innerText}}).then(response => response.json()).then(payload => {
+		const delivery = document.getElementById('mediaId').innerText;
+		fetch('/api/startup/edit', {method: 'POST', headers: {'Content-Type': 'application/json'}, 'body': JSON.stringify(delivery)}).then(response => response.json()).then(payload => {
+			console.log(payload)
 			appliedTags = payload[0];
 			allTags = payload[1];
+			startUpTags();
 		});
 	} else {
-		fetch('/api/startup', {method: 'GET', headers: {'Content-Type': 'application/json', 'stateRequest' : 'stateData'}}).then(response => response.json()).then(payload => {
+		fetch('/api/startup', {method: 'GET', headers: {'Content-Type': 'application/json'}}).then(response => response.json()).then(payload => {
 		console.log(payload)
 		allTags = payload;
 		startUpTags();

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codingdojo.groupproject.MoveRequest;
+import com.codingdojo.groupproject.models.Media;
 import com.codingdojo.groupproject.models.Tag;
 import com.codingdojo.groupproject.services.MediaService;
 import com.codingdojo.groupproject.services.TagService;
@@ -49,5 +50,33 @@ public class TagListController {
 		
 		return ResponseEntity.ok((Integer) 1);
 		
+	}
+	
+	@PostMapping("/api/startup/edit")
+	public ResponseEntity<List<List<String>>> initializeEdit(@RequestBody Integer mediaId){
+		Media media = mediaService.findMedia((long) mediaId);
+		List<String> toModel = new ArrayList<String>();
+		for(Tag tag : media.getTags()) {
+			for(Tag freshTag : tagService.findAllTags()) {
+				if(tag.getConflictId() == freshTag.getConflictId() && tag.getConflictId() > 0) {
+					//Do nothing
+				} else if(tag.getId() == freshTag.getId()) {
+					//Do nothing
+				} else {
+					toModel.add(freshTag.getName());
+				}
+				
+			}
+		}
+		System.out.println(toModel);
+		List<Tag> tags = media.getTags();
+		List<String> tagNames = new ArrayList<String>();
+		for(Tag tag : tags) {
+			tagNames.add(tag.getName());
+		}
+		List<List<String>> toList = new ArrayList<List<String>>();
+		toList.add(0, tagNames); toList.add(1, toModel);
+		
+		return ResponseEntity.ok(toList);
 	}
 }

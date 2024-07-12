@@ -26,7 +26,7 @@
 					</div>
 					<div class="row">
 						<div class="col d-flex justify-content-start">
-							<h3>Add a Game to <c:out value="${user.userName}"></c:out>'s Favorites</h3>
+							<h3>Edit a Game from <c:out value="${user.userName}"></c:out>'s Favorites</h3>
 						</div>
 						<div class="col gap-2 d-flex justify-content-end">
 							<a class="btn btn-success shadow" href="/taggedfavorites/home">Go back to Favorites</a>
@@ -36,23 +36,24 @@
 			</div>
 			<div class="row d-flex">
 				<div class="col col-5 gap-2 d-flex flex-column justify-content-center">
-					<div class="card p-3 border-0 rounded-4 bg-success-subtle bg-gradient shadow">
-						<form:form action="/taggedfavorites/games/create" method="post" modelAttribute="newMedia">
+					<div class="card p-3 border-0 rounded-4 bg-warning-subtle bg-gradient shadow">
+						<form:form action="/taggedfavorites/${editedMedia.id}/update" method="post" modelAttribute="editedMedia">
 							<div class="form-floating mb-3">
-								<form:input path="name" class="form-control" type="text" id="floatingInputName" placeholder="Title" />
+								<form:input path="name" class="form-control" type="text" id="floatingInputName" value="${editedMedia.name}" />
 								<form:label path="name" class="text-secondary" for="floatingInputName">Title</form:label>
 								<form:errors path="name" class="text-danger" />
 							</div>
 							<div class="form-floating mb-3">
-								<form:input path="category" class="form-control" type="text" id="floatingInputCategory" placeholder="Category" />
+								<form:input path="category" class="form-control" type="text" id="floatingInputCategory" value="${editedMedia.category}" />
 								<form:label path="category" class="text-secondary" for="floatingInputCategory">Category</form:label>
 								<form:errors path="category" class="text-danger" />
 							</div>
 							<div class="form-floating mb-3">
-								<form:input path="status" class="form-control" type="text" id="floatingInputStatus" placeholder="Status" />
+								<form:input path="status" class="form-control" type="text" id="floatingInputStatus" value="${editedMedia.status}" />
 								<form:label path="status" class="text-secondary" for="floatingInputStatus">Status</form:label>
 								<form:errors path="status" class="text-danger" />
 							</div>
+							<br />
 							<div class="row">
 								<div class="col">
 									<h4>Available Tags</h4>
@@ -65,14 +66,15 @@
 									<ul id='untaglist' class="ft-5" style="list-style:none"></ul>
 								</div>
 							</div>
-						<input type="hidden" id="hiddenList" name="hiddenList"/> 
+						<input type="hidden" id="hiddenList" name="hiddenList"/>
 							<br />
 							<div class="d-flex justify-content-end gap-2">
-								<a class="btn btn-secondary shadow" href="<c:out value="/taggedfavorites/games/create"/>">Reset</a>
-								<input type="submit" class="btn btn-success shadow" value="Add game" />
+								<a class="btn btn-secondary shadow" href="<c:out value="/taggedfavorites/${editedMedia.id}/edit"/>">Reset</a>
+								<input type="submit" class="btn btn-warning shadow" value="Update game" />
 							</div>
 						</form:form>
 					</div>
+					<div id="mediaId" style="display:none"><c:out value="${editedMedia.id}"/></div>
 				</div>
 			</div>
 		</div>

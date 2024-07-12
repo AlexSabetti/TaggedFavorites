@@ -3,6 +3,7 @@ package com.codingdojo.groupproject.models;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -62,6 +64,9 @@ public class User {
     	inverseJoinColumns = @JoinColumn(name="media_id")
     )
     private List<Media> favorites;
+    
+    @OneToMany(mappedBy="user", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    private List<Media> medias;
     
   
     public User() {}
@@ -148,6 +153,17 @@ public class User {
 	public Date getUpdatedAt() {
 		return updatedAt;
 	}
+
+	public List<Media> getMedias() {
+		return medias;
+	}
+
+	public void setMedias(List<Media> medias) {
+		this.medias = medias;
+	}
+	
+	
+	
 	
 	
     
