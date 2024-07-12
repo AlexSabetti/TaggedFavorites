@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.codingdojo.groupproject.models.LoginUser;
 import com.codingdojo.groupproject.models.Media;
@@ -91,7 +92,19 @@ public class HomeController {
 		}
 	}
 	
-	@GetMapping("/taggedfavorites/games/create")
+	@GetMapping("/taggedfavorites/{mediaId}/delete")
+	public String deleteMedia(@PathVariable("mediaId") Long mediaId, Model model) {
+		if(session.getAttribute("currentuser")== null) {
+			return "redirect:/";
+		}else {
+			
+			Media media = mediaService.findMedia(mediaId);
+			mediaService.deleteMedia(media);
+			return "redirect:/taggedfavorites/home";
+		}
+	}
+	
+	@GetMapping("/games/new")
 	public String createGame(Model model) {
 		if(session.getAttribute("currentuser") == null) {
 			model.addAttribute("warning", "You are not logged in, please log in.");
@@ -105,10 +118,10 @@ public class HomeController {
 		}
 	}
 	
-	@PostMapping("/taggedfavorites/games/create")
+	@PostMapping("/games/new")
 	public String newGame(@Valid @ModelAttribute("newMedia") Media media, BindingResult result, Model model) {
 		if(result.hasErrors()) {
-			return "createPage.jsp";
+			return "createOne.jsp";
 		} else {
 			User user = userService.findUserById((long) session.getAttribute("currentuser"));
 			userService.addFavoriteMedia(user, mediaService.createMedia(media));
@@ -116,7 +129,7 @@ public class HomeController {
 		}
 	}
 	
-	@GetMapping("/taggedfavorites/games/{mediaId}/edit")
+	@GetMapping("/taggedfavorites/{mediaId}/edit")
 	public String editGame(@PathVariable("mediaId") Long id, Model model) {
 		if(session.getAttribute("currentuser") == null) {
 			model.addAttribute("warning", "You are not logged in, please log in.");
@@ -139,6 +152,23 @@ public class HomeController {
 			model.addAttribute("newMedia", media);
 			model.addAttribute("tags", toModel);
 			return "editOne.jsp";
+		}
+	}
+	
+	@PostMapping("/taggedfavorites/{mediaId}/edit")
+	public String editing(@Valid @ModelAttribute("newMedia") Media media, @PathVariable("mediaId") Long id, BindingResult result, Model model, @RequestParam String tags) {
+		if(result.hasErrors()) {
+			return "editOne.jsp";
+		} else {
+			List<Tag> actualtags = media.getTags();
+			for(String name : tags.split(",")) {
+				if(!actualtags.contains(tagService.findTagByName(name))) {
+					media.getTags().add(tagService.findTagByName(name));
+				}
+			}
+			media.setId(id);
+			mediaService.updateMedia(media);
+			return "redirect:/taggedfavorites/home";
 		}
 	}
 	

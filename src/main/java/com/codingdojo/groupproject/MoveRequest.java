@@ -1,30 +1,33 @@
 package com.codingdojo.groupproject;
 
 public class MoveRequest {
-	private Long mediaId;
-	private Long tagId;
+	private String[] mediaTagList;
+	private String tagName;
 	
 	public MoveRequest() {}
 	
-	public MoveRequest(Long mediaId, Long tagId) {
-		this.tagId = tagId;
-		this.mediaId = mediaId;
+	public MoveRequest(String[] mediaTagList, String tagName) {
+		this.tagName = tagName;
+		this.mediaTagList = mediaTagList;
 	}
 
-	public Long getMediaId() {
-		return mediaId;
+
+	public String[] getMediaTagList() {
+		return mediaTagList;
 	}
 
-	public void setMediaId(Long mediaId) {
-		this.mediaId = mediaId;
+	public void setMediaTagList(String[] mediaTagList) {
+		this.mediaTagList = mediaTagList;
 	}
 
-	public Long getTagId() {
-		return tagId;
+	public String getTagName() {
+		return tagName;
 	}
 
-	public void setTagId(Long tagId) {
-		this.tagId = tagId;
+	public void setTagName(String tagName) {
+		this.tagName = tagName;
 	}
+	
+	
 	
 }
